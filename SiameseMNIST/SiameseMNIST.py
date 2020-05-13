@@ -6,6 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from Siamese import Siamese
 import numpy as np
+#from tensorflow.keras.utils import to_categorical
 
 def visualize(embed, labels):
     labelset = set(labels)
@@ -26,24 +27,28 @@ def main():
     x_train, x_test = x_train / 255.0, x_test / 255.0
     x_train=x_train.reshape(x_train.shape[0],x_train.shape[1]*x_train.shape[2])
     x_test=x_test.reshape(x_test.shape[0],x_test.shape[1]*x_test.shape[2])
-   # s = pd.Series(y_test)
+    #s  = pd.Series(y_test)
     #y_test=pd.get_dummies(s)
 
    # mnist = input_data.read_data_sets('MNIST_data', one_hot = False)
    # mnist_test_labels = mnist.test.labels
     
     siamese = Siamese()
-    siamese.trainSiamese(x_train, y_train,10,100)
+    siamese.trainSiamese(x_train, y_train, 10, 128)
+    #siamese.saveModel()
+    #siamese.loadModel()
+    siamese.trainSiameseForClassification(x_train, y_train, 10, 128)
     
     # Test model
-    print("Done training")
     embed = siamese.test_model(input = x_test)
     #embed.tofile('embed.txt')
-
     #embed = np.fromfile('embed.txt', dtype = np.float32)
+
     embed = embed.reshape([-1, 2])
-    visualize(embed, y_test)
-    print("Done")
+    #visualize(embed, y_test)
+
+    siamese.computeAccuracy(x_test,y_test)#?
+
 
 if __name__ == '__main__':
     main()
